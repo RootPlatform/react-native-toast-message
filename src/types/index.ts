@@ -150,7 +150,7 @@ export type ToastConfigParams<Props> = {
 };
 
 export type ToastConfig = {
-  [key: string]: (params: ToastConfigParams<any>) => React.ReactNode;
+  [key: string]: (params: ToastConfigParams<any>) => JSX.Element;
 };
 
 export type ToastRef = {

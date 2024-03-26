@@ -38,8 +38,7 @@ function renderComponent({
   hide,
   unmount
 }: ToastUIProps) {
-  const { text1, text2 } = data;
-  const { type, onPress, text1Style, text2Style, position, props } = options;
+  const { type } = options;
 
   const toastConfig = {
     ...defaultToastConfig,
@@ -52,21 +51,7 @@ function renderComponent({
       `Toast type: '${type}' does not exist. You can add it via the 'config' prop on the Toast instance. Learn more: https://github.com/calintamas/react-native-toast-message/blob/master/README.md`
     );
   }
-
-  return ToastComponent({
-    position,
-    type,
-    isVisible,
-    text1,
-    text2,
-    text1Style,
-    text2Style,
-    show,
-    hide,
-    unmount,
-    onPress,
-    props
-  });
+  return <ToastComponent {...options} {...data} isVisible={isVisible} show={show} hide={hide} unmount={unmount} />;
 }
 
 export function ToastUI(props: ToastUIProps) {
