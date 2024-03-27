@@ -77,6 +77,10 @@ export type ToastOptions = {
    */
   onHide?: () => void;
   /**
+   * Called when Toast finished hiding
+   */
+  onHidden?: () => void;
+  /**
    * Called on Toast press
    */
   onPress?: () => void;
@@ -216,6 +220,10 @@ export type ToastProps = {
    * Called when any Toast hides
    */
   onHide?: () => void;
+  /**
+   * Called when Toast finished hiding
+   */
+  onHidden?: () => void;
   /**
    * Called on any Toast press
    */
