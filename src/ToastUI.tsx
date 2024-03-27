@@ -14,7 +14,7 @@ import {
 } from './types';
 
 export type ToastUIProps = {
-  isVisible: boolean;
+  isVisible: boolean | undefined;
   options: Required<ToastOptions>;
   data: ToastData;
   show: (params: ToastShowParams) => void;
@@ -56,7 +56,7 @@ function renderComponent({
 
 export function ToastUI(props: ToastUIProps) {
   const { isVisible, options, hide } = props;
-  const { position, topOffset, bottomOffset, keyboardOffset, swipeable, translateYFactor, animationProps } = options;
+  const { position, topOffset, bottomOffset, keyboardOffset, swipeable, translateYFactor, animationProps, onHidden } = options;
 
   return (
     <AnimatedContainer
@@ -68,7 +68,8 @@ export function ToastUI(props: ToastUIProps) {
       swipeable={swipeable}
       translateYFactor={translateYFactor}
       animationProps={animationProps}
-      onHide={hide}>
+      onHide={hide}
+      onHidden={onHidden}>
       {renderComponent(props)}
     </AnimatedContainer>
   );

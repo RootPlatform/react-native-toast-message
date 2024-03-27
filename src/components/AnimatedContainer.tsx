@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Animated, Dimensions, PanResponderGestureState } from 'react-native';
 
 import { useLogger } from '../contexts';
@@ -15,7 +15,7 @@ import { styles } from './AnimatedContainer.styles';
 
 export type AnimatedContainerProps = {
   children: ReactChildren;
-  isVisible: boolean;
+  isVisible: boolean | undefined;
   position: ToastPosition;
   topOffset: number;
   swipeable: boolean;
@@ -24,6 +24,7 @@ export type AnimatedContainerProps = {
   translateYFactor?: number;
   animationProps?: SpringAnimationProps
   onHide: () => void;
+  onHidden: () => void;
   onRestorePosition?: () => void;
 };
 
@@ -77,6 +78,7 @@ export function AnimatedContainer({
   bottomOffset,
   keyboardOffset,
   onHide,
+  onHidden,
   onRestorePosition = noop,
   swipeable,
   translateYFactor,
@@ -99,15 +101,15 @@ export function AnimatedContainer({
 
   const onDismiss = React.useCallback(() => {
     log('Swipe, dismissing');
-    animate(0);
+    animate({ toValue: 0, onHidden});
     onHide();
-  }, [animate, log, onHide]);
+  }, [animate, log, onHidden, onHide]);
 
   const onRestore = React.useCallback(() => {
     log('Swipe, restoring to original position');
-    animate(1);
+    animate({ toValue: 1, onHidden});
     onRestorePosition();
-  }, [animate, log, onRestorePosition]);
+  }, [animate, log, onHidden, onRestorePosition]);
 
   const computeNewAnimatedValueForGesture = React.useCallback(
     (gesture: PanResponderGestureState) => {
@@ -125,10 +127,12 @@ export function AnimatedContainer({
     disable: !swipeable
   });
 
+
   React.useLayoutEffect(() => {
-    const newAnimationValue = isVisible ? 1 : 0;
-    animate(newAnimationValue);
-  }, [animate, isVisible]);
+    if (isVisible === undefined) return; // Avoid animating toValue 0 when launching app
+    const toAnimationValue = isVisible ? 1 : 0;
+    animate({ toValue: toAnimationValue, onHidden });
+  }, [animate, isVisible, onHidden]);
 
   return (
     <Animated.View

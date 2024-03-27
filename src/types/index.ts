@@ -137,7 +137,7 @@ export type BaseToastProps = {
 export type ToastConfigParams<Props> = {
   position: ToastPosition;
   type: ToastType;
-  isVisible: boolean;
+  isVisible: boolean | undefined;
   text1?: string;
   text2?: string;
   text1Style?: StyleProp<TextStyle>;

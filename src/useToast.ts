@@ -24,6 +24,7 @@ export const DEFAULT_OPTIONS: ToastOptions = {
   keyboardOffset: 10,
   onShow: noop,
   onHide: noop,
+  onHidden: noop,
   onPress: noop,
   props: {}
 };
@@ -35,7 +36,7 @@ export type UseToastParams = {
 export function useToast({ defaultOptions }: UseToastParams) {
   const { log } = useLogger();
 
-  const [isVisible, setIsVisible] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState<undefined | boolean>(undefined);
   const [data, setData] = React.useState<ToastData>(DEFAULT_DATA);
 
   const initialOptions = mergeIfDefined(
@@ -84,6 +85,7 @@ export function useToast({ defaultOptions }: UseToastParams) {
         keyboardOffset = initialOptions.keyboardOffset,
         onShow = initialOptions.onShow,
         onHide = initialOptions.onHide,
+        onHidden = initialOptions.onHidden,
         onPress = initialOptions.onPress,
         swipeable = initialOptions.swipeable,
         translateYFactor = initialOptions.translateYFactor,
@@ -107,6 +109,7 @@ export function useToast({ defaultOptions }: UseToastParams) {
           keyboardOffset,
           onShow,
           onHide,
+          onHidden,
           onPress,
           swipeable,
           translateYFactor,

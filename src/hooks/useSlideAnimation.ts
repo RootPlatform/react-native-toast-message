@@ -48,14 +48,25 @@ export function useSlideAnimation({
   const animatedValue = React.useRef(new Animated.Value(0));
   const { keyboardHeight } = useKeyboard();
 
-  const animate = React.useCallback((toValue: number) => {
+  const animate = React.useCallback(({ toValue, onHidden}: { toValue: number; onHidden: () => void }) => 
+  new Promise((resolve, reject) => {
     Animated.spring(animatedValue.current, {
       ...animationProps,
       toValue,
       useNativeDriver,
-      friction: animationProps?.friction ? animationProps.friction: 8
-    }).start();
-  }, [animationProps]);
+      friction: animationProps?.friction ? animationProps.friction : 8
+    }).start(({ finished }) => {
+      if (finished) {
+        resolve(true); // Resolve the promise when the animation finishes
+        if (toValue === 0) {
+          // Animated to value 0 - run onHidden
+          onHidden();
+        }
+      } else {
+        reject(new Error('Animation was interrupted')); // Reject if the animation was interrupted
+      }
+    });
+  }), [animationProps]);
 
   const translateY = React.useMemo(() => animatedValue.current.interpolate({
     inputRange: [0, 1],
