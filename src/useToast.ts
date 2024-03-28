@@ -33,6 +33,7 @@ export type UseToastParams = {
   defaultOptions: Omit<ToastProps, 'config'>;
 };
 
+const hideParams = ['onHidden']; // Add params to this array if new ones are created
 export function useToast({ defaultOptions }: UseToastParams) {
   const { log } = useLogger();
 
@@ -55,10 +56,9 @@ export function useToast({ defaultOptions }: UseToastParams) {
     onAutoHide,
     options.visibilityTime
   );
-
+  
   const hide = React.useCallback(
     (params?: ToastHideParams) => {
-      const hideParams = ['onHidden']; // Add params to this array if new ones are created
       const validHideParams = params && hideParams.some(param => Object.keys(params).includes(param));
       if (validHideParams) {
         log("Hiding with params", params); // For some reason JSON.stringify returns an empty object
