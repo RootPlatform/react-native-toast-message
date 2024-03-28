@@ -129,7 +129,7 @@ Toast.show = (params: ToastShowParams) => {
 };
 
 Toast.hide = (params?: ToastHideParams) => {
-  getRef()?.hide(params);
+  getRef()?.hide(params ? params : undefined);
 };
 
 Toast.unmount = (params?: ToastUnmountParams) => {

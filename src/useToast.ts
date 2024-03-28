@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useLogger } from './contexts';
 import { useTimeout } from './hooks';
-import { ToastData, ToastOptions, ToastProps, ToastShowParams } from './types';
+import { ToastData, ToastHideParams, ToastOptions, ToastProps, ToastShowParams } from './types';
 import { noop } from './utils/func';
 import { mergeIfDefined } from './utils/obj';
 
@@ -56,12 +56,23 @@ export function useToast({ defaultOptions }: UseToastParams) {
     options.visibilityTime
   );
 
-  const hide = React.useCallback(() => {
-    log('Hiding');
-    setIsVisible(false);
-    clearTimer();
-    options.onHide();
-  }, [clearTimer, log, options]);
+  const hide = React.useCallback(
+    (params?: ToastHideParams) => {
+      const hideParams = ['onHidden']; // Add params to this array if new ones are created
+      const validHideParams = params && hideParams.some(param => Object.keys(params).includes(param));
+      if (validHideParams) {
+        log("Hiding with params", params); // For some reason JSON.stringify returns an empty object
+        const { onHidden } = params;
+        options.onHidden = onHidden || initialOptions.onHidden; // For now, we only pass onHidden as a callback, later if we start passing multiple params, we can make this prettier.
+      } else {
+        log("Hiding without params");
+      }
+      setIsVisible(false);
+      clearTimer();
+      options.onHide();
+    },
+    [clearTimer, initialOptions.onHidden, log, options]
+  );
 
   const unmount = React.useCallback(() => {
     log('Unmounting');

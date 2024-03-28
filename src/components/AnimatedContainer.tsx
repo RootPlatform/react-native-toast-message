@@ -7,7 +7,7 @@ import {
   useSlideAnimation,
   useViewDimensions
 } from '../hooks';
-import { ReactChildren, SpringAnimationProps, ToastPosition } from '../types';
+import { ReactChildren, SpringAnimationProps, ToastHideParams, ToastPosition } from '../types';
 import { noop } from '../utils/func';
 import { bound } from '../utils/number';
 import { getTestId } from '../utils/test-id';
@@ -23,7 +23,7 @@ export type AnimatedContainerProps = {
   keyboardOffset: number;
   translateYFactor?: number;
   animationProps?: SpringAnimationProps
-  onHide: () => void;
+  onHide: (params?: ToastHideParams) => void;
   onHidden: () => void;
   onRestorePosition?: () => void;
 };

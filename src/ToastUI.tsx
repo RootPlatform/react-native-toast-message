@@ -18,7 +18,7 @@ export type ToastUIProps = {
   options: Required<ToastOptions>;
   data: ToastData;
   show: (params: ToastShowParams) => void;
-  hide: (params: ToastHideParams) => void;
+  hide: (params?: ToastHideParams) => void;
   unmount: (params: ToastUnmountParams) => void;
   config?: ToastConfig;
 };

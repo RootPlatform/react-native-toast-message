@@ -106,6 +106,13 @@ export type ToastOptions = {
   animationProps?: SpringAnimationProps
 };
 
+export type ToastHideOptions = {
+  /**
+   * Called when Toast finished hiding
+   */
+  onHidden?: () => void;
+};
+
 export type SpringAnimationProps =  Omit<Parameters<typeof Animated.spring>[1], 'useNativeDriver'| 'toValue'>
 
 export type ToastData = {
@@ -115,7 +122,7 @@ export type ToastData = {
 
 export type ToastShowParams = ToastData & ToastOptions;
 
-export type ToastHideParams = void;
+export type ToastHideParams = ToastHideOptions;
 
 export type ToastUnmountParams = void;
 
@@ -147,7 +154,7 @@ export type ToastConfigParams<Props> = {
   text1Style?: StyleProp<TextStyle>;
   text2Style?: StyleProp<TextStyle>;
   show: (params: ToastShowParams) => void;
-  hide: (params: ToastHideParams) => void;
+  hide: (params?: ToastHideParams) => void;
   unmount: (params: ToastUnmountParams) => void;
   onPress: () => void;
   props: Props;
@@ -159,7 +166,7 @@ export type ToastConfig = {
 
 export type ToastRef = {
   show: (params: ToastShowParams) => void;
-  hide: (params: ToastHideParams) => void;
+  hide: (params?: ToastHideParams) => void;
   unmount: (params: ToastUnmountParams) => void;
 };
 
