@@ -7,10 +7,6 @@
   "files": [
     "/lib"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/calintamas/react-native-toast-message.git"
-  },
   "keywords": [
     "react-native",
     "toast"
