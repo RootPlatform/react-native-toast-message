@@ -22,10 +22,14 @@ export function shouldDismissView(
   gesture: PanResponderGestureState
 ) {
   const dismissThreshold = 0.65;
-  const { vy, dy } = gesture;
+  const { vy } = gesture;
+  // Dismiss when swiped toward origin (value drops below threshold)
+  // or when swiped away from origin (value exceeds symmetric threshold)
+  // or on a fast flick in either direction
   return (
     newAnimatedValue <= dismissThreshold ||
-    (Math.abs(vy) >= dismissThreshold && dy < 0)
+    newAnimatedValue >= (2 - dismissThreshold) ||
+    Math.abs(vy) >= dismissThreshold
   );
 }
 
@@ -34,7 +38,7 @@ export type UsePanResponderParams = {
   computeNewAnimatedValueForGesture: (
     gesture: PanResponderGestureState
   ) => number;
-  onDismiss: () => void;
+  onDismiss: (currentAnimatedValue: number) => void;
   onRestore: () => void;
   disable?: boolean;
 };
@@ -66,7 +70,7 @@ export function usePanResponder({
 
       const newAnimatedValue = computeNewAnimatedValueForGesture(gesture);
       if (shouldDismissView(newAnimatedValue, gesture)) {
-        onDismiss();
+        onDismiss(newAnimatedValue);
       } else {
         onRestore();
       }

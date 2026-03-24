@@ -60,8 +60,8 @@ export function useSlideAnimation({
           friction: animationProps?.friction ? animationProps.friction : 8,
         }).start(({ finished }) => {
           if (finished) {
-            if (toValue === 0) {
-              // Animated to value 0 - run onHidden
+            if (toValue === 0 || toValue === 2) {
+              // Animated off-screen (0 = toward origin, 2 = away from origin) - run onHidden
               onHidden();
             }
           } else {
@@ -85,8 +85,15 @@ export function useSlideAnimation({
   }), [position, height, topOffset, bottomOffset, keyboardHeight, keyboardOffset]);
 
   const opacity = animatedValue.current.interpolate({
-    inputRange: [0, 0.7, 1],
-    outputRange: [0, 1, 1]
+    inputRange: [0, 0.7, 1, 1.3, 2],
+    outputRange: [0, 1, 1, 1, 0],
+    extrapolate: 'clamp'
+  });
+
+  const scale = animatedValue.current.interpolate({
+    inputRange: [0, 0.7, 1, 1.3, 2],
+    outputRange: [0.8, 1, 1, 1, 0.8],
+    extrapolate: 'clamp'
   });
 
   return {
@@ -97,6 +104,9 @@ export function useSlideAnimation({
       transform: [
         {
           translateY
+        },
+        {
+          scale
         }
       ]
     }
