@@ -99,17 +99,31 @@ export function AnimatedContainer({
     animationProps
   });
 
-  const onDismiss = React.useCallback(() => {
+  // Track isVisible in a ref so swipe callbacks can read the latest value
+  const isVisibleRef = React.useRef(isVisible);
+  isVisibleRef.current = isVisible;
+
+  const onDismiss = React.useCallback((currentAnimatedValue: number) => {
     log('Swipe, dismissing');
-    animate({ toValue: 0, onHidden});
+    // Animate away from origin when swiped in the opposite direction (value > 1)
+    const toValue = currentAnimatedValue > 1 ? 2 : 0;
+    animate({ toValue, onHidden});
     onHide();
   }, [animate, log, onHidden, onHide]);
 
   const onRestore = React.useCallback(() => {
+    // If the auto-hide timer already fired during the swipe, dismiss instead of
+    // restoring — otherwise the toast freezes on screen with pointerEvents: 'none'.
+    if (isVisibleRef.current === false) {
+      log('Swipe, auto-hide fired during gesture — dismissing');
+      animate({ toValue: 0, onHidden });
+      onHide();
+      return;
+    }
     log('Swipe, restoring to original position');
     animate({ toValue: 1, onHidden});
     onRestorePosition();
-  }, [animate, log, onHidden, onRestorePosition]);
+  }, [animate, log, onHidden, onHide, onRestorePosition]);
 
   const computeNewAnimatedValueForGesture = React.useCallback(
     (gesture: PanResponderGestureState) => {
