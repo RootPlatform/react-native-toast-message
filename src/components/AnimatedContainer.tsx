@@ -23,6 +23,9 @@ export type AnimatedContainerProps = {
   keyboardOffset: number;
   translateYFactor?: number;
   animationProps?: SpringAnimationProps
+  fade?: boolean;
+  slide?: boolean;
+  hideDelay?: number;
   onHide: (params?: ToastHideParams) => void;
   onHidden: () => void;
   onRestorePosition?: () => void;
@@ -82,7 +85,10 @@ export function AnimatedContainer({
   onRestorePosition = noop,
   swipeable,
   translateYFactor,
-  animationProps
+  animationProps,
+  fade,
+  slide,
+  hideDelay
 }: AnimatedContainerProps) {
   const { log } = useLogger();
 
@@ -96,7 +102,9 @@ export function AnimatedContainer({
     topOffset,
     bottomOffset,
     keyboardOffset,
-    animationProps
+    animationProps,
+    fade,
+    slide
   });
 
   // Track isVisible in a ref so swipe callbacks can read the latest value
@@ -143,10 +151,22 @@ export function AnimatedContainer({
 
 
   React.useLayoutEffect(() => {
-    if (isVisible === undefined) return; // Avoid animating toValue 0 when launching app
+    if (isVisible === undefined) return undefined; // Avoid animating toValue 0 when launching app
+    if (!isVisible && hideDelay) {
+      // Parks offscreen after the toast's own exit; a finished swipe already did
+      const timer = setTimeout(() => {
+        animatedValue.current.stopAnimation((value) => {
+          if (value === 0 || value === 2) return;
+          animatedValue.current.setValue(0);
+          onHidden();
+        });
+      }, hideDelay);
+      return () => clearTimeout(timer);
+    }
     const toAnimationValue = isVisible ? 1 : 0;
     animate({ toValue: toAnimationValue, onHidden });
-  }, [animate, isVisible, onHidden]);
+    return undefined;
+  }, [animate, animatedValue, hideDelay, isVisible, onHidden]);
 
   return (
     <Animated.View

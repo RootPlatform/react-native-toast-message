@@ -11,6 +11,9 @@ export type AnimatedContainerProps = {
     keyboardOffset: number;
     translateYFactor?: number;
     animationProps?: SpringAnimationProps;
+    fade?: boolean;
+    slide?: boolean;
+    hideDelay?: number;
     onHide: (params?: ToastHideParams) => void;
     onHidden: () => void;
     onRestorePosition?: () => void;
@@ -23,4 +26,4 @@ export type AnimatedContainerProps = {
  */
 export declare function dampingFor(gesture: PanResponderGestureState, position: ToastPosition): number;
 export declare function animatedValueFor(gesture: PanResponderGestureState, position: ToastPosition, damping: number): number;
-export declare function AnimatedContainer({ children, isVisible, position, topOffset, bottomOffset, keyboardOffset, onHide, onHidden, onRestorePosition, swipeable, translateYFactor, animationProps }: AnimatedContainerProps): React.JSX.Element;
+export declare function AnimatedContainer({ children, isVisible, position, topOffset, bottomOffset, keyboardOffset, onHide, onHidden, onRestorePosition, swipeable, translateYFactor, animationProps, fade, slide, hideDelay }: AnimatedContainerProps): React.JSX.Element;

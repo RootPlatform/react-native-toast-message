@@ -2,6 +2,7 @@
 
 import { render } from '@testing-library/react-native';
 import React from 'react';
+import { Text } from 'react-native';
 
 import { ToastUI, ToastUIProps } from '../ToastUI';
 import { DEFAULT_OPTIONS } from '../useToast';
@@ -55,6 +56,24 @@ describe('test ToastUI component', () => {
     });
     expect(queryByText('text1')).toBeDefined();
     expect(queryByText('text2')).toBeDefined();
+  });
+
+  it('reads fade and slide off the config entry', () => {
+    const custom = Object.assign(() => <Text>custom</Text>, {
+      fade: false,
+      slide: false
+    });
+    const { queryByTestId } = setup({
+      isVisible: false,
+      options: {
+        ...DEFAULT_OPTIONS,
+        type: 'custom'
+      },
+      config: { custom }
+    });
+    const container = queryByTestId('toastAnimatedContainer');
+    expect(container).toHaveStyle({ opacity: 1 });
+    expect(container).not.toHaveStyle({ transform: expect.anything() });
   });
 
   it('throws when trying to render an undefined Toast type', () => {

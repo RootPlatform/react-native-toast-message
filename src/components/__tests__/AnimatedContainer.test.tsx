@@ -3,6 +3,7 @@
 import { render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import {
+  Animated,
   Dimensions,
   PanResponderGestureState,
   View,
@@ -74,6 +75,50 @@ describe('test AnimatedContainer component', () => {
       })
     );
     expect(queryByTestId('childView')).not.toBe(null);
+  });
+
+  it('stays opaque while hidden when fade: false', () => {
+    const { queryByTestId } = setup({ fade: false });
+    expect(queryByTestId('toastAnimatedContainer')).toHaveStyle({
+      ...defaultStyles,
+      opacity: 1
+    });
+  });
+
+  it('has no transform when slide: false', () => {
+    const { queryByTestId } = setup({ slide: false });
+    expect(queryByTestId('toastAnimatedContainer')).not.toHaveStyle({
+      transform: expect.anything()
+    });
+  });
+
+  it('holds in place for hideDelay on hide, then calls onHidden', async () => {
+    const onHidden = jest.fn();
+    const props = { onHidden, hideDelay: 200 };
+    const { queryByTestId, rerender } = setup({ ...props, isVisible: true });
+    await waitFor(() =>
+      expect(queryByTestId('toastAnimatedContainer')).toHaveStyle({
+        opacity: 1
+      })
+    );
+    const defaultProps = {
+      position: 'top' as const,
+      swipeable: true,
+      topOffset: 40,
+      bottomOffset: 40,
+      keyboardOffset: 10,
+      onHide: jest.fn()
+    };
+    const spring = jest.spyOn(Animated, 'spring');
+    rerender(
+      <AnimatedContainer {...defaultProps} {...props} isVisible={false}>
+        <View testID='childView' />
+      </AnimatedContainer>
+    );
+    expect(onHidden).not.toHaveBeenCalled();
+    await waitFor(() => expect(onHidden).toHaveBeenCalledTimes(1));
+    expect(spring).not.toHaveBeenCalled();
+    spring.mockRestore();
   });
 
   it('restores toast position on pan (if gesture is higher than threshold)', async () => {
