@@ -154,14 +154,19 @@ export function AnimatedContainer({
     if (isVisible === undefined) return undefined; // Avoid animating toValue 0 when launching app
     if (!isVisible && hideDelay) {
       // Parks offscreen after the toast's own exit; a finished swipe already did
+      let cancelled = false;
       const timer = setTimeout(() => {
+        // The native value reads back async; a show that lands first keeps its toast
         animatedValue.current.stopAnimation((value) => {
-          if (value === 0 || value === 2) return;
+          if (cancelled || value === 0 || value === 2) return;
           animatedValue.current.setValue(0);
           onHidden();
         });
       }, hideDelay);
-      return () => clearTimeout(timer);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
     }
     const toAnimationValue = isVisible ? 1 : 0;
     animate({ toValue: toAnimationValue, onHidden });
