@@ -55,11 +55,17 @@ function renderComponent({
 }
 
 export function ToastUI(props: ToastUIProps) {
-  const { isVisible, options, hide } = props;
+  const { isVisible, options, hide, config } = props;
   const { position, topOffset, bottomOffset, keyboardOffset, swipeable, translateYFactor, animationProps, onHidden } = options;
+  const entry = config?.[options.type];
+  const fade = entry?.fade !== false;
+  const slide = entry?.slide !== false;
+  const hideDelay = entry?.hideDelay;
 
   return (
     <AnimatedContainer
+      // Keyed so a non-fading toast never reuses a native view a fading toast took to alpha 0
+      key={`${fade ? 'fade' : 'solid'}-${slide ? 'slide' : 'still'}`}
       isVisible={isVisible}
       position={position}
       topOffset={topOffset}
@@ -68,6 +74,9 @@ export function ToastUI(props: ToastUIProps) {
       swipeable={swipeable}
       translateYFactor={translateYFactor}
       animationProps={animationProps}
+      fade={fade}
+      slide={slide}
+      hideDelay={hideDelay}
       onHide={hide}
       onHidden={onHidden}>
       {renderComponent(props)}

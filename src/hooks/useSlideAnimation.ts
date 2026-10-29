@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Platform } from 'react-native';
+import { Animated, Dimensions, Platform } from 'react-native';
 
 import { SpringAnimationProps, ToastPosition } from '../types';
 import { additiveInverseArray } from '../utils/array';
@@ -13,6 +13,8 @@ type UseSlideAnimationParams = {
   bottomOffset: number;
   keyboardOffset: number;
   animationProps?: SpringAnimationProps
+  fade?: boolean;
+  slide?: boolean;
 };
 
 export function translateYOutputRangeFor({
@@ -29,7 +31,9 @@ export function translateYOutputRangeFor({
   const keyboardAwareOffset =
     position === 'bottom' ? keyboardHeight + keyboardOffset : 0;
 
-  const range = [-(height * 2), Math.max(offset, keyboardAwareOffset)];
+  // Unmeasured (height 0) parks a full window away so a non-fading toast never shows at y=0
+  const hidden = height > 0 ? height * 2 : Dimensions.get('window').height;
+  const range = [-hidden, Math.max(offset, keyboardAwareOffset)];
   const outputRange =
     position === 'bottom' ? additiveInverseArray(range) : range;
 
@@ -44,7 +48,9 @@ export function useSlideAnimation({
   topOffset,
   bottomOffset,
   keyboardOffset,
-  animationProps
+  animationProps,
+  fade = true,
+  slide = true
 }: UseSlideAnimationParams) {
   const animatedValue = React.useRef(new Animated.Value(0));
   const { keyboardHeight } = useKeyboard();
@@ -100,15 +106,18 @@ export function useSlideAnimation({
     animatedValue,
     animate,
     animationStyles: {
-      opacity,
-      transform: [
-        {
-          translateY
-        },
-        {
-          scale
-        }
-      ]
+      // Glass effects don't render under an ancestor with alpha < 1 (expo/expo#41024)
+      opacity: fade ? opacity : 1,
+      transform: slide
+        ? [
+            {
+              translateY
+            },
+            {
+              scale
+            }
+          ]
+        : undefined
     }
   };
 }

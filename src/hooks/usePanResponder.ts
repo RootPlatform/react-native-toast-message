@@ -17,6 +17,8 @@ export function shouldSetPanResponder(
   return Math.abs(dx) > offset || Math.abs(dy) > offset;
 }
 
+const neverSetPanResponder = () => false;
+
 export function shouldDismissView(
   newAnimatedValue: number,
   gesture: PanResponderGestureState
@@ -78,15 +80,18 @@ export function usePanResponder({
     [computeNewAnimatedValueForGesture, onDismiss, onRestore, disable]
   );
 
+  // A non-swipeable toast never claims the touch, so finger jitter can't cancel a press inside it
+  const shouldSet = disable ? neverSetPanResponder : shouldSetPanResponder;
+
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: shouldSetPanResponder,
-        onMoveShouldSetPanResponderCapture: shouldSetPanResponder,
+        onMoveShouldSetPanResponder: shouldSet,
+        onMoveShouldSetPanResponderCapture: shouldSet,
         onPanResponderMove: onMove,
         onPanResponderRelease: onRelease
       }),
-    [onMove, onRelease]
+    [onMove, onRelease, shouldSet]
   );
 
   return {

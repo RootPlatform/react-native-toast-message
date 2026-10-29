@@ -3,7 +3,10 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { Animated, GestureResponderEvent } from 'react-native';
 
-import { mockGestureValues } from '../../__helpers__/PanResponder';
+import {
+  mockGestureValues,
+  mockPanResponder
+} from '../../__helpers__/PanResponder';
 import { usePanResponder } from '../usePanResponder';
 import { shouldSetPanResponder } from '..';
 
@@ -74,6 +77,16 @@ describe('test usePanResponder hook', () => {
     expect(computeNewAnimatedValueForGesture).not.toBeCalledWith(
       mockGestureValues
     );
+  });
+
+  it('never claims the responder if disable: true', () => {
+    mockPanResponder();
+    const { result } = setup({ disable: true });
+    const { panHandlers } = result.current.panResponder;
+    const event = {} as GestureResponderEvent;
+    const gesture = { ...mockGestureValues, dx: 20, dy: 20 };
+    expect(panHandlers.onMoveShouldSetResponder?.(event, gesture as never)).toBe(false);
+    expect(panHandlers.onMoveShouldSetResponderCapture?.(event, gesture as never)).toBe(false);
   });
 
   it('calls onDismiss when swipe gesture value is below dismiss threshold', () => {

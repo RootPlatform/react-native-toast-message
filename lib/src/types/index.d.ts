@@ -137,8 +137,31 @@ export type ToastConfigParams<Props> = {
     onPress: () => void;
     props: Props;
 };
+/**
+ * Animation options read off a `ToastConfig` entry (set as properties on the render function).
+ */
+export type ToastConfigEntryOptions = {
+    /**
+     * `false` keeps the container at full opacity while it slides (e.g. for glass effects,
+     * which don't render under an ancestor with alpha < 1).
+     * Default value: `true`
+     */
+    fade?: boolean;
+    /**
+     * `false` fades in place without the translate/scale transform, so presses land
+     * on the first tap while the toast animates in.
+     * Default value: `true`
+     */
+    slide?: boolean;
+    /**
+     * On hide, holds the container in place for this many ms and then parks it offscreen
+     * without animating, so the toast can run its own exit.
+     */
+    hideDelay?: number;
+};
+export type ToastConfigEntry = ((params: ToastConfigParams<any>) => JSX.Element) & ToastConfigEntryOptions;
 export type ToastConfig = {
-    [key: string]: (params: ToastConfigParams<any>) => JSX.Element;
+    [key: string]: ToastConfigEntry;
 };
 export type ToastRef = {
     show: (params: ToastShowParams) => void;

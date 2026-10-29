@@ -5,7 +5,7 @@ export declare function shouldDismissView(newAnimatedValue: number, gesture: Pan
 export type UsePanResponderParams = {
     animatedValue: RefObject<Animated.Value>;
     computeNewAnimatedValueForGesture: (gesture: PanResponderGestureState) => number;
-    onDismiss: () => void;
+    onDismiss: (currentAnimatedValue: number) => void;
     onRestore: () => void;
     disable?: boolean;
 };

@@ -8,21 +8,27 @@ type UseSlideAnimationParams = {
     bottomOffset: number;
     keyboardOffset: number;
     animationProps?: SpringAnimationProps;
+    fade?: boolean;
+    slide?: boolean;
 };
 export declare function translateYOutputRangeFor({ position, height, topOffset, bottomOffset, keyboardHeight, keyboardOffset }: UseSlideAnimationParams & {
     keyboardHeight: number;
 }): number[];
-export declare function useSlideAnimation({ position, height, topOffset, bottomOffset, keyboardOffset, animationProps }: UseSlideAnimationParams): {
+export declare function useSlideAnimation({ position, height, topOffset, bottomOffset, keyboardOffset, animationProps, fade, slide }: UseSlideAnimationParams): {
     animatedValue: React.MutableRefObject<Animated.Value>;
     animate: ({ toValue, onHidden }: {
         toValue: number;
         onHidden: () => void;
     }) => Promise<unknown>;
     animationStyles: {
-        opacity: Animated.AnimatedInterpolation;
-        transform: {
+        opacity: number | Animated.AnimatedInterpolation;
+        transform: ({
             translateY: Animated.AnimatedInterpolation;
-        }[];
+            scale?: undefined;
+        } | {
+            scale: Animated.AnimatedInterpolation;
+            translateY?: undefined;
+        })[] | undefined;
     };
 };
 export {};
